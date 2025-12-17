@@ -1,0 +1,6 @@
+<h3>Comments</h3>
+{% for comment in comments %}
+    <p><b>{{ comment.user.username }}:</b> {{ comment.content }}</p>
+{% empty %}
+    <p>Heç bir comment yoxdur.</p>
+{% endfor %}

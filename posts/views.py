@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Q 
-from .models import Category, Post, Author
+from .models import Category, Post, Author,Comment
+
 
 def get_author(user):
     qs = Author.objects.filter(user=user)
@@ -22,10 +23,22 @@ def homepage (request):
 def post (request,slug):
     post = Post.objects.get(slug = slug)
     latest = Post.objects.order_by('-timestamp')[:3]
-    context = {
+    comments = post.comments.filter(active=True)
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            content=request.POST.get('content')
+            if content:
+                Comment.objects.create(
+                    post=post,
+                    user=request.user,
+                    content=content
+                )
+
+    context={
         'post': post,
         'latest': latest,
-    }
+        'comments':comments,
+    }            
     return render(request, 'post.html', context)
 
 def about (request):
