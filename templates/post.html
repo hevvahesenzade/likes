@@ -4,6 +4,8 @@
 
 <body class="bg-gray-100 font-sans leading-normal tracking-normal"> 
 
+	
+
 	<!--Container-->
 	<div class="container w-full md:max-w-3xl mx-auto pt-20">
 
@@ -46,7 +48,7 @@
 
 		<!--Divider-->
 		<hr class="border-b-2 border-gray-400 mb-8 mx-4">
-
+        <button id="likeBtn">{{ post.total_likes }} Likes</button>
 		<!-- Comment bölməsi -->
 		<h3 class="px-4 py-2 text-xl font-bold">Comments</h3>
 		<div class="px-4">
@@ -80,6 +82,20 @@
 	<!--/container-->
 
 </body>
+<script>
+document.getElementById('likeBtn').addEventListener('click', function(){
+    fetch(`/post/{{ post.slug }}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('likeBtn').innerText = data.total_likes + " Likes";
+    });
+});
+</script>
 
 {% endblock content %}
 

@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Q 
 from .models import Category, Post, Author,Comment
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
 
 
 def get_author(user):
@@ -75,3 +78,12 @@ def allposts(request):
         'posts': posts,
     }
     return render(request, 'all_posts.html', context)
+
+@login_required
+def like_post(request, slug):
+    post = Post.objects.get(slug=slug)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+    return JsonResponse({'total_likes': post.likes.count()})

@@ -1,6 +1,12 @@
-<h3>Comments</h3>
-{% for comment in comments %}
-    <p><b>{{ comment.user.username }}:</b> {{ comment.content }}</p>
-{% empty %}
-    <p>Heç bir comment yoxdur.</p>
-{% endfor %}
+{% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Göndər</button>
+    </form>
+{% else %}
+    <p>
+        Comment yazmaq üçün 
+        <a href="{% url 'login' %}">daxil olun</a>.
+    </p>
+{% endif %}

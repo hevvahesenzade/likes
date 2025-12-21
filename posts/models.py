@@ -21,6 +21,7 @@ class Category(models.Model):
 
 
 class Post(models.Model):
+    likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     title = models.CharField(max_length=100)
     slug = models.SlugField()
     overview = models.TextField()
