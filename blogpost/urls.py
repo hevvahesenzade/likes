@@ -16,6 +16,7 @@ urlpatterns = [
     path('post/<slug:slug>/like/', like_post, name='like_post'),
     path('post/<slug:slug>/', post, name='post'),
     path('post/<slug:slug>/like/', like_post, name='like_post'),
+    
 
 ]
 

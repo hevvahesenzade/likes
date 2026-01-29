@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Q 
-from .models import Category, Post, Author,Comment
+from .models import Category, Post, Author
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-
+from django.shortcuts import get_object_or_404
 
 
 def get_author(user):
@@ -26,21 +26,10 @@ def homepage (request):
 def post (request,slug):
     post = Post.objects.get(slug = slug)
     latest = Post.objects.order_by('-timestamp')[:3]
-    comments = post.comments.filter(active=True)
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            content=request.POST.get('content')
-            if content:
-                Comment.objects.create(
-                    post=post,
-                    user=request.user,
-                    content=content
-                )
-
     context={
         'post': post,
         'latest': latest,
-        'comments':comments,
+        
     }            
     return render(request, 'post.html', context)
 
@@ -79,11 +68,21 @@ def allposts(request):
     }
     return render(request, 'all_posts.html', context)
 
+
+
 @login_required
 def like_post(request, slug):
-    post = Post.objects.get(slug=slug)
-    if request.user in post.likes.all():
-        post.likes.remove(request.user)
+    post = get_object_or_404(Post, slug=slug)
+    user = request.user
+
+    if user in post.likes.all():
+        post.likes.remove(user)   # UNLIKE
+        liked = False
     else:
-        post.likes.add(request.user)
-    return JsonResponse({'total_likes': post.likes.count()})
+        post.likes.add(user)      # LIKE
+        liked = True
+
+    return JsonResponse({
+        'liked': liked,
+        'total_likes': post.likes.count()
+    })

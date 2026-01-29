@@ -47,55 +47,40 @@
 		<!--/Author-->
 
 		<!--Divider-->
-		<hr class="border-b-2 border-gray-400 mb-8 mx-4">
-        <button id="likeBtn">{{ post.total_likes }} Likes</button>
-		<!-- Comment bölməsi -->
-		<h3 class="px-4 py-2 text-xl font-bold">Comments</h3>
-		<div class="px-4">
-			{% if comments %}
-				{% for comment in comments %}
-					<div class="mb-2 p-2 border rounded bg-gray-50">
-						<p><b>{{ comment.user.username }}:</b> {{ comment.content }}</p>
-						<p class="text-sm text-gray-500">{{ comment.created_at|date:"M d, Y H:i" }}</p>
-					</div>
-				{% endfor %}
-			{% else %}
-				<p>Heç bir comment yoxdur.</p>
-			{% endif %}
-		</div>
-
-		<!-- Comment formu -->
-		{% if request.user.is_authenticated %}
-			<hr class="border-b-2 border-gray-400 mb-4 mx-4">
-			<h3 class="px-4 py-2 text-xl font-bold">Yeni Comment Yaz</h3>
-			<form method="POST" class="px-4 py-2">
-				{% csrf_token %}
-				<textarea name="content" rows="3" class="w-full border p-2 rounded" placeholder="Comment yaz..."></textarea>
-				<br>
-				<button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Göndər</button>
-			</form>
-		{% else %}
-			<p class="px-4 py-2">Comment yazmaq üçün daxil olun.</p>
-		{% endif %}
-
-	</div>
-	<!--/container-->
-
 </body>
+{% csrf_token %}
+
+<button id="like-btn" type="button">
+    ❤️ Like (<span id="like-count">{{ post.likes.count }}</span>)
+</button>
+
 <script>
-document.getElementById('likeBtn').addEventListener('click', function(){
-    fetch(`/post/{{ post.slug }}/like/`, {
-        method: 'POST',
+document.getElementById("like-btn").addEventListener("click", function () {
+    fetch("{% url 'like_post' post.slug %}", {   // 👈 BURA ÇOX VACİB
+        method: "POST",
         headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
-        }
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
     })
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => {
-        document.getElementById('likeBtn').innerText = data.total_likes + " Likes";
+        document.getElementById("like-count").innerText = data.total_likes;
+
+        if (data.liked) {
+            this.innerHTML = "💔 Unlike (<span id='like-count'>" + data.total_likes + "</span>)";
+        } else {
+            this.innerHTML = "❤️ Like (<span id='like-count'>" + data.total_likes + "</span>)";
+        }
     });
 });
 </script>
+
+	
+	</div>
+	<!--/container-->
+
+
+
 
 {% endblock content %}
 

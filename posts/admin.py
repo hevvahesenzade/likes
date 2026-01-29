@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Comment
+from .models import Post
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
@@ -12,10 +12,5 @@ class PostAdmin(admin.ModelAdmin):
     total_likes.short_description = 'Likes'
 
 
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'post', 'content', 'active', 'created_at')
-    list_filter = ('active', 'created_at')
-    search_fields = ('user__username', 'content')
 
 
